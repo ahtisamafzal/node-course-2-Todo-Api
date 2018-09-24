@@ -39,7 +39,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client) => {
   };
 
   //Inserting record into MongoDB TodoApp
-  //InsertDoc(db, 'users', insertObj);
+  InsertDoc(db, 'users', insertObj);
 
   client.close();
 });
@@ -50,7 +50,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client) => {
 var InsertDoc = (db, collectionObj, insertObj) => {
   db.collection(collectionObj).insertOne(insertObj, (err, result) => {
     if (err) {
-      return console.log('Unable to insert Todo', err);
+      return console.log(`Unable to find any ${collectionObj}`, err);
     }
     console.log(JSON.stringify(result.ops, undefined, 2));
     //Load DateTimeStamp when object is created.

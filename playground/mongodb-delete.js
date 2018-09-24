@@ -76,7 +76,7 @@ var DeleteManyDocs = (db, collectionObj, deleteObj) => {
   db.collection(collectionObj).deleteMany(deleteObj).then((result) => {
     return console.log(JSON.stringify(result, undefined, 2));
   }, (err) => {
-    return console.log('Unable to find any Todos', err);
+    return console.log(`Unable to find any ${collectionObj}`, err);
   });
 };
 
@@ -85,7 +85,7 @@ var DeleteOneDoc = (db, collectionObj, deleteObj) => {
   db.collection(collectionObj).deleteOne(deleteObj).then((result) => {
     return console.log(JSON.stringify(result, undefined, 2));
   }, (err) => {
-    return console.log('Unable to find any Todos', err);
+    return console.log(`Unable to find any ${collectionObj}`, err);
   });
 };
 
@@ -94,6 +94,6 @@ var FindOneDeleteDoc = (db, collectionObj, deleteObj) => {
   db.collection(collectionObj).findOneAndDelete(deleteObj).then((doc) => {
     return console.log(JSON.stringify(doc, undefined, 2));
   }, (err) => {
-    return console.log('Unable to find any Todos', err);
+    return console.log(`Unable to find any ${collectionObj}`, err);
   });
 };

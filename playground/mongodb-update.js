@@ -37,49 +37,63 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', {
 
   console.log('Connected to Mongodb Server');
   const db = client.db('TodoApp');
-  CountDocs(db, 'Todos');
 
-  //Find record into MongoDB TodoApp
-  var findOptions = {
-    complete: true
-  };
-  FindDocs(db, 'Todos', findOptions);
 
-  CountDocs(db, 'users');
-  //Find record into MongoDB TodoApp
-  findOptions = {
-    _id: new ObjectID('5ba76fe5e628fe8b6a60f22b')
+  //FindOne and Update records from MongoDB Todos
+  var updateOptions = new Object({
+    _id: new ObjectID('5ba7d40a7d7eab997ecfdfb5')
+  }, {
+    $set: {
+      complete: false
+    }
+  }, {
+    returnOriginal: false
+  });
+  // ({
+  //     _id: new ObjectID('5ba7d40a7d7eab997ecfdfb5')
+  //   },
+  //   {
+  //     $set: {
+  //       complete: true,
+  //       text: "Something something"
+  //     }
+  //   }, {
+  //     returnOriginal: false
+  //   });
+  //
+  //
+  //
+  console.log(JSON.stringify(updateOptions, undefined, 2));
+  console.log(updateOptions);
+  FindOneUpdateDoc(db, 'Todos', updateOptions);
+
+
+
+  //FindOne and Update records from MongoDB users
+  updateOptions = {
+    _id: new ObjectID('5ba7d17a04ed9d992119e7cf')
+  }, {
+    $set: {
+      complete: true
+    }
+  }, {
+    returnOriginal: false
   };
-  FindDocs(db, 'users', findOptions);
+
+  console.log(JSON.stringify(updateOptions, undefined, 2));
+
+  FindOneUpdateDoc(db, 'users', updateOptions);
 
   client.close();
 });
 
 
-var CountDocs = (db, collectionObj) => {
 
-  db.collection(collectionObj).find().count().then((countDocs) => {
-    return console.log(`${collectionObj} countDocs: ${countDocs}`);
+//FindOne and Delete
+var FindOneUpdateDoc = (db, collectionObj, updateObj) => {
+  db.collection(collectionObj).findOneAndUpdate(updateObj).then((doc) => {
+    return console.log(JSON.stringify(doc, undefined, 2));
   }, (err) => {
     return console.log(`Unable to find any ${collectionObj}`, err);
   });
-
-};
-
-var FindDocs = (db, collectionObj, findObj) => {
-  if (findObj === null) { // Return all records as array
-    db.collection(collectionObj).find().toArray().then((docs) => {
-      console.log(collectionObj);
-      return console.log(JSON.stringify(docs, undefined, 2));
-    }, (err) => {
-      return console.log(`Unable to find any ${collectionObj}`, err);
-    });
-  } else {
-    db.collection(collectionObj).find(findObj).toArray().then((docs) => {
-      console.log(collectionObj);
-      return console.log(JSON.stringify(docs, undefined, 2));
-    }, (err) => {
-      return console.log(`Unable to find any ${collectionObj}`, err);
-    });
-  }
 };
