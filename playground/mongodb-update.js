@@ -38,60 +38,47 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', {
   console.log('Connected to Mongodb Server');
   const db = client.db('TodoApp');
 
-
   //FindOne and Update records from MongoDB Todos
-  var updateOptions = new Object({
-    _id: new ObjectID('5ba7d40a7d7eab997ecfdfb5')
-  }, {
-    $set: {
-      complete: false
-    }
-  }, {
-    returnOriginal: false
-  });
-  // ({
-  //     _id: new ObjectID('5ba7d40a7d7eab997ecfdfb5')
-  //   },
-  //   {
-  //     $set: {
-  //       complete: true,
-  //       text: "Something something"
-  //     }
-  //   }, {
-  //     returnOriginal: false
-  //   });
-  //
-  //
-  //
-  console.log(JSON.stringify(updateOptions, undefined, 2));
-  console.log(updateOptions);
-  FindOneUpdateDoc(db, 'Todos', updateOptions);
-
-
-
-  //FindOne and Update records from MongoDB users
-  updateOptions = {
-    _id: new ObjectID('5ba7d17a04ed9d992119e7cf')
-  }, {
-    $set: {
-      complete: true
-    }
-  }, {
+  var updateOption = {
     returnOriginal: false
   };
 
-  console.log(JSON.stringify(updateOptions, undefined, 2));
+  var updateFilter = {
+    _id: new ObjectID('5ba7d40a7d7eab997ecfdfb5')
+  };
 
-  FindOneUpdateDoc(db, 'users', updateOptions);
+  var updateObject = {
+    $set: {
+      complete: true,
+      text: "Hellooo World"
+    }
+  };
+
+  FindOneUpdateDoc(db, 'Todos', updateFilter, updateObject, updateOption);
+
+  //FindOne and Update records from MongoDB users
+  updateFilter = {
+    _id: new ObjectID('5ba7d17a04ed9d992119e7cf')
+  };
+
+  updateObject = {
+    $set: {
+      name: "Ahtisam"
+    },
+    $inc: {
+      age: 1
+    }
+  };
+
+  FindOneUpdateDoc(db, 'users', updateFilter, updateObject, updateOption);
 
   client.close();
 });
 
+//FindOne and Update
+var FindOneUpdateDoc = (db, collectionObj, updateFilter, updateObj, updateOption) => {
 
-
-//FindOne and Delete
-var FindOneUpdateDoc = (db, collectionObj, updateObj) => {
-  db.collection(collectionObj).findOneAndUpdate(updateObj).then((doc) => {
+  db.collection(collectionObj).findOneAndUpdate(updateFilter, updateObj, updateOption).then((doc) => {
     return console.log(JSON.stringify(doc, undefined, 2));
   }, (err) => {
     return console.log(`Unable to find any ${collectionObj}`, err);

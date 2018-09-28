@@ -24,7 +24,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client) => {
   const db = client.db('TodoApp');
 
   var insertObj = {
-    text: 'Something to do good',
+    text: 'Something to do good Yahoooooo!',
     complete: false
   };
 
@@ -33,8 +33,8 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client) => {
 
   insertObj = {
     name: 'Sabi',
-    age: 38,
-    location: 'Sutton Lane Hounslow, TW34LA',
+    age: 11,
+    location: 'Sutton Lane Hounslow, TW34LA Yahooooo!',
     complete: false
   };
 

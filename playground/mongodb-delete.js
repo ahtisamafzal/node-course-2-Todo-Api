@@ -49,7 +49,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', {
   // };
   // DeleteOneDoc(db, 'Todos', deleteOptions);
   deleteOptions = {
-    _id: new ObjectID('5ba7d2d8585df299562f8426')
+    _id: new ObjectID('5bad3313f6ccc5215b779fad')
   };
   FindOneDeleteDoc(db, 'Todos', deleteOptions);
 
