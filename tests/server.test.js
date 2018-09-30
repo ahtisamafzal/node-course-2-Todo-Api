@@ -10,6 +10,27 @@ beforeEach((done) => {
   models.Todo.deleteMany({}).then(() => done());
 });
 
+describe('GET /todo', () => {
+  it('Should load all Todos', (done) => {
+    request(app)
+    .get('/todo')
+    .expect(200)
+    .expect((res) => {
+
+    })
+    .end((err, res) => {
+      if(err){
+        return done(err);
+      }
+
+      models.Todo.find().then((todos) => {
+        expect(todos.length).toBe(0)
+        done();
+      }).catch((e) => done(e));
+    });
+  });
+});
+
 describe('POST /todo', () => {
   it('Should create a new Todo', (done) => {
 
@@ -55,9 +76,6 @@ describe('POST /todo', () => {
         expect(todos.length).toBe(0);
         done();
       }).catch((e) => done(e));
-
-
-
   });
 
 });

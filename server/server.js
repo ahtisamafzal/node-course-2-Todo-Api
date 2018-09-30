@@ -11,17 +11,15 @@ var app = express();
 
 app.use(bodyparser.json());
 
+// POST request
 app.post('/todo', (req, res) => {
   try {
     // console.log(`request coming in as JSON is : ${JSON.stringify(req.body,undefined,2)}`);
-
     var newTodo = new models.Todo({
       text: req.body.text,
       completed: req.body.completed,
       completedAt: req.body.completedAt,
     });
-
-
     //console.log(models.Todo);
 
     newTodo.save().then((doc) => {
@@ -37,6 +35,27 @@ app.post('/todo', (req, res) => {
     }
   }
 });
+
+// GET request
+app.get('/todo', (req, res) => {
+  try {
+    models.Todo.find().then((todos) => {
+      res.send({
+        todos
+      });
+    }, (err) => {
+      if (err)
+        res.status(400).send(err);
+    });
+  } catch (e) {
+    if (e) {
+      console.log(`Error in GET /todo, ${e}`);
+    }
+
+  }
+
+});
+
 
 app.listen(3000, () => {
   try {
