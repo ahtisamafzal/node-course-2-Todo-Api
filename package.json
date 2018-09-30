@@ -4,17 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "devserver": "./node_modules/nodemon/bin/nodemon.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha **/*.test.js",
+    "test-watch": "nodemon --exec 'npm test'",
+    "devserver": "./node_modules/nodemon/bin/nodemon.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "expect": "^23.6.0",
     "express": "^4.16.3",
+    "mocha": "^5.2.0",
     "mongodb": "^3.1.6",
     "mongoose": "^5.2.18",
     "mongoose-type-email": "^1.0.9",
+    "supertest": "^3.3.0",
     "typegoose": "^5.4.0"
   },
   "devDependencies": {
