@@ -4,11 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "devserver": "./node_modules/nodemon/bin/nodemon.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mongodb": "^3.1.6"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "mongodb": "^3.1.6",
+    "mongoose": "^5.2.18",
+    "mongoose-type-email": "^1.0.9",
+    "typegoose": "^5.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4",
+    "typescript": "^3.1.1"
   }
 }
