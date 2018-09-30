@@ -3,6 +3,7 @@ const request = require('supertest');
 
 const {
   app,
+  mongoose,
   models
 } = require('../server/server');
 
