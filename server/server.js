@@ -1,3 +1,4 @@
+
 var express = require('express');
 var bodyparser = require('body-parser');
 const {
@@ -9,6 +10,7 @@ var {
 } = require('../db/mongoose');
 // console.log(mongoose);
 var models = require('../models/models')(mongoose);
+const port = process.env.PORT || 3000;
 
 var app = express();
 
@@ -86,12 +88,12 @@ app.get('/todo/:id', (req, res) => {
 });
 
 
-app.listen(3000, () => {
+app.listen(port, () => {
   try {
-    console.log('Start on port localhost:3000');
+    console.log(`Start up at port ${port}`);
   } catch (e) {
     if (e) {
-      console.log(`Error listening port localhost:3000, ${e}`);
+      console.log(`Error listening port ${port}, ${e}`);
     }
   }
 });
