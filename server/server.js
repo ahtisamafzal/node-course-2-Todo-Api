@@ -94,13 +94,14 @@ app.delete('/todo/:id', (req, res) => {
     if (!ObjectID.isValid(id)) {
       res.status(404).send('ID is invalid');
     }
-    models.Todo.findByIdAndRemove(id).then((removeTodo) => {
-      if (!removeTodo) {
-        res.status(400).send();
+
+    models.Todo.findByIdAndRemove(id).then((todo) => {
+      if (!todo) {
+        res.status(404).send();
       }
       // console.log(removeTodo);
       res.send({
-        removeTodo
+        todo
       });
     }).catch((e) => {
       res.status(400).send();
