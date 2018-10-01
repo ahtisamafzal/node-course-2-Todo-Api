@@ -28,7 +28,7 @@ const {
 //     return console.error('could not connect to mongo DB', err)
 //   });
 
-MongoClient.connect(Process.env.MONDODB_URI || 'mongodb://localhost:27017/TodoApp', {
+MongoClient.connect(Process.env.MONGODB_URI || 'mongodb://localhost:27017/TodoApp', {
   useNewUrlParser: true
 }, (err, client) => {
   if (err) {

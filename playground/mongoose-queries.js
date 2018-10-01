@@ -17,7 +17,7 @@ if (!ObjectID.isValid(id)) {
 
 // return console.log(mongoose.connections[0].client);
 
-MongoClient.connect(Process.env.MONDODB_URI || `mongodb://localhost:27017/${mongoose.connections[0].name}`, {
+MongoClient.connect(Process.env.MONGODB_URI || `mongodb://localhost:27017/${mongoose.connections[0].name}`, {
   useNewUrlParser: true
 }, (err, client) => {
   if (err) {
