@@ -1,4 +1,3 @@
-
 var express = require('express');
 var bodyparser = require('body-parser');
 const {
@@ -86,6 +85,35 @@ app.get('/todo/:id', (req, res) => {
   }
 
 });
+
+// DELETE request by Id
+app.delete('/todo/:id', (req, res) => {
+  try {
+    var id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+      res.status(404).send('ID is invalid');
+    }
+    models.Todo.findByIdAndRemove(id).then((removeTodo) => {
+      if (!removeTodo) {
+        res.status(400).send();
+      }
+      // console.log(removeTodo);
+      res.send({
+        removeTodo
+      });
+    }).catch((e) => {
+      res.status(400).send();
+    });
+
+  } catch (e) {
+    if (e) {
+      console.log(`Error in GET /todo, ${e}`);
+    }
+  }
+
+});
+
 
 
 app.listen(port, () => {
