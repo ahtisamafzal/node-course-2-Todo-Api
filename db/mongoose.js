@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 // var userModel = require('../models/Users');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(Process.env.MONGODB_URI || 'mongodb://localhost:27017/Mongoose-TodoApp', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Mongoose-TodoApp', {
   useNewUrlParser: true
 }, (err) => {
   if (err)
