@@ -137,7 +137,7 @@ app.patch('/todo/:id', (req, res) => {
       body.completedAt = null;
     }
 
-    console.log('body: ', body);
+    // console.log('body: ', body);
 
     models.Todo.findByIdAndUpdate(id, {
       $set: body

@@ -16,8 +16,7 @@ module.exports = function(mongoose) {
       required: [true, 'Completed is required field']
     },
     completedAt: {
-      type: Number,
-      required: [true, 'CompletedAt is required field']
+      type: Date
     }
   });
   // declare users document schema here

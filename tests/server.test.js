@@ -1,5 +1,6 @@
 const expect = require('expect');
 const request = require('supertest');
+const _ = require('lodash');
 
 const {
   app,
@@ -14,18 +15,15 @@ const {
 const todos = [{
   _id: new ObjectID(),
   text: 'First Test',
-  completed: false,
-  completedAt: 0
+  completed: false
 }, {
   _id: new ObjectID(),
   text: 'Second Test',
-  completed: true,
-  completedAt: 1
+  completed: true
 }, {
   _id: new ObjectID(),
   text: 'Third Test',
-  completed: false,
-  completedAt: 0
+  completed: false
 }]
 
 beforeEach((done) => {
@@ -59,7 +57,7 @@ describe('POST /todo', () => {
           expect(todos.length).toBe(1);
           expect(todos[0].text).toBe(todoModel.text);
           expect(todos[0].completed).toBe(todoModel.completed);
-          expect(todos[0].completedAt).toBe(todoModel.completedAt);
+          // expect(todos[0].completedAt).toBe(todoModel.completedAt);
           done();
         }).catch((e) => done(e));
       });
@@ -143,7 +141,7 @@ describe('DELETE /todo/:id', () => {
 
   it('Should return 404 if todo doc not found', (done) => {
     var hexId = new ObjectID();
-    console.log(hexId);
+    // console.log(hexId);
     request(app)
       .delete(`/todo/${hexId}`)
       .expect(404)
@@ -162,4 +160,69 @@ describe('DELETE /todo/:id', () => {
       })
       .end(done);
   });
+});
+
+
+describe('PATCH /todo/:id', () => {
+  it('Should update todo doc completed status to TRUE & set completedAt equals to currecnt DATE', (done) => {
+    // _.pick(req.body, ['text', 'completed']);
+    var reqBody = todos[0];
+    reqBody.text = "updated by patch call with status true";
+    reqBody.completed = true;
+
+    request(app)
+      .patch(`/todo/${reqBody._id.toHexString()}`)
+      .send(reqBody)
+      .expect(200)
+      .expect((res) => {
+        var resBody = _.pick(res.body.todo, ['text', 'completed', 'completedAt']);
+        // console.log(resBody);
+        expect(resBody.text).toBe(reqBody.text);
+        expect(typeof resBody.completed).toBe('boolean');
+        expect(resBody.completed).toBe(true);
+        expect(typeof resBody.completedAt).toBe('string');
+      })
+      .end(done);
+  });
+
+  it('Should clear completedAt when todo is not completed', (done) => {
+    var reqBody = todos[1];
+    reqBody.text = "updated by patch call with status false";
+    reqBody.completed = false;
+    request(app)
+      .patch(`/todo/${reqBody._id.toHexString()}`)
+      .send(reqBody)
+      .expect(200)
+      .expect((res) => {
+        var resBody = _.pick(res.body.todo, ['text', 'completed', 'completedAt']);
+        // console.log(resBody);
+        expect(resBody.text).toBe(reqBody.text);
+        expect(typeof resBody.completed).toBe('boolean');
+        expect(resBody.completed).toBe(false);
+        expect(resBody.completedAt).toBeFalsy();
+      })
+      .end(done);
+  });
+
+  // it('Should clear completedAt when todo is not completed', (done) => {
+  //   var hexId = new ObjectID();
+  //   console.log(hexId);
+  //   request(app)
+  //     .patch(`/todo/${hexId}`)
+  //     .expect(404)
+  //     .expect((res) => {
+  //       expect(res.text.length).toBe(0)
+  //     })
+  //     .end(done);
+  // });
+  //
+  // it('Should return 404 for none object ids', (done) => {
+  //   request(app)
+  //     .patch(`/todo/${123}`)
+  //     .expect(404)
+  //     .expect((res) => {
+  //       expect(res.text).toBe('ID is invalid')
+  //     })
+  //     .end(done);
+  // });
 });
