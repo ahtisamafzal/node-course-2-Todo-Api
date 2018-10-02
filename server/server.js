@@ -1,5 +1,6 @@
-var express = require('express');
-var bodyparser = require('body-parser');
+const _ = require('lodash');
+const express = require('express');
+const bodyparser = require('body-parser');
 const {
   ObjectID
 } = require('mongodb');
@@ -14,6 +15,7 @@ const port = process.env.PORT || 3000;
 var app = express();
 
 app.use(bodyparser.json());
+
 
 // POST request
 app.post('/todo', (req, res) => {
@@ -40,6 +42,7 @@ app.post('/todo', (req, res) => {
   }
 });
 
+
 // GET request
 app.get('/todo', (req, res) => {
   try {
@@ -57,6 +60,7 @@ app.get('/todo', (req, res) => {
     }
   }
 });
+
 
 // GET request by Id
 app.get('/todo/:id', (req, res) => {
@@ -86,6 +90,7 @@ app.get('/todo/:id', (req, res) => {
 
 });
 
+
 // DELETE request by Id
 app.delete('/todo/:id', (req, res) => {
   try {
@@ -109,12 +114,53 @@ app.delete('/todo/:id', (req, res) => {
 
   } catch (e) {
     if (e) {
-      console.log(`Error in GET /todo, ${e}`);
+      console.log(`Error in DELETE /todo, ${e}`);
     }
   }
-
 });
 
+
+// UPDATE request by
+app.patch('/todo/:id', (req, res) => {
+  try {
+    var id = req.params.id;
+    var body = _.pick(req.body, ['text', 'completed']);
+
+    if (!ObjectID.isValid(id)) {
+      res.status(404).send('ID is invalid');
+    }
+
+    if (_.isBoolean(body.completed) && body.completed) {
+      body.completedAt = new Date().getTime();
+    } else {
+      body.completed = false;
+      body.completedAt = null;
+    }
+
+    console.log('body: ', body);
+
+    models.Todo.findByIdAndUpdate(id, {
+      $set: body
+    }, {
+      new: true
+    }).then((todo) => {
+      if (!todo) {
+        res.status(404).send();
+      }
+      // console.log(removeTodo);
+      res.send({
+        todo
+      });
+    }).catch((e) => {
+      res.status(400).send();
+    });
+
+  } catch (e) {
+    if (e) {
+      console.log(`Error in PATCH /todo, ${e}`);
+    }
+  }
+});
 
 
 app.listen(port, () => {
@@ -126,6 +172,7 @@ app.listen(port, () => {
     }
   }
 });
+
 
 module.exports = {
   app,
