@@ -5,13 +5,15 @@ var mongoose = require('mongoose');
 // var userModel = require('../models/Users');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Mongoose-TodoApp', {
+mongoose.connect(process.env.MONGODB_URI, {
   useCreateIndex: true,
   useNewUrlParser: true
 }, (err) => {
   if (err)
     console.log('Unable to connect to Mongodb Server');
 });
+
+
 
 
 module.exports = {mongoose};

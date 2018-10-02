@@ -20,7 +20,7 @@ const todos = [{
   _id: new ObjectID(),
   text: 'Second Test',
   completed: true
-}, {
+}, { 
   _id: new ObjectID(),
   text: 'Third Test',
   completed: false
