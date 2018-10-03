@@ -20,6 +20,8 @@ var {
 } = require('../db/mongoose');
 // console.log(mongoose);
 var models = require('../models/models')(mongoose);
+var authenticate = require('./middleware/authenticate')(models);
+
 const port = process.env.PORT || 3000;
 
 var app = express();
@@ -202,6 +204,14 @@ app.post('/user', (req, res) => {
     }
   }
 });
+
+
+
+
+app.get('/user/me', authenticate, (req, res) => {
+    res.send(req.user);
+});
+
 
 app.listen(port, () => {
   try {

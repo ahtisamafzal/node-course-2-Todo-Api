@@ -4,7 +4,8 @@ require('mongoose-type-email');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
-module.exports = function(mongoose) {
+
+var loadTodoSchema = function (mongoose){
   // declare todo document schema here
   var todoSchema = new mongoose.Schema({
     text: {
@@ -22,6 +23,11 @@ module.exports = function(mongoose) {
       type: Date
     }
   });
+  return todoSchema;
+}
+
+var loadUsersSchema = function (mongoose){
+
   // declare users document schema here
   var userSchema = new mongoose.Schema({
     fullname: {
@@ -82,14 +88,14 @@ module.exports = function(mongoose) {
       default: Date.now
     }
   });
-
+  // overwrite Return method to return id and email only
   userSchema.methods.toJSON = function() {
     var user = this;
     var userObject = user.toObject();
     return _.pick(userObject, ['_id', 'email']);
-
   };
 
+  // generate Authentication token using JWT
   userSchema.methods.generateAuthToken = function() {
     var user = this;
     var access = 'auth';
@@ -107,9 +113,32 @@ module.exports = function(mongoose) {
       return token;
     });
   };
-  var models = {
-    Todo: mongoose.model('Todo', todoSchema),
-    Users: mongoose.model('Users', userSchema)
+
+  // find user by loading passed in token adn checking database.
+  userSchema.statics.findByToken = function(token) {
+    var User = this;
+    var decoded;
+
+    try {
+      decoded = jwt.verify(token, '123abc');
+    } catch (e) {
+      console.log('Error DECODING TOKEN:-', e);
+      return Promise.reject();
+    }
+
+    return User.findById({
+      '_id': decoded.id,
+      'tokens.token': token,
+      'tokens.access': 'auth'
+    });
   };
-  return models;
+
+  return userSchema;
+}
+
+module.exports = function(mongoose) {
+  return models = {
+    Todo: mongoose.model('Todo', loadTodoSchema(mongoose)),
+    Users: mongoose.model('Users', loadUsersSchema(mongoose))
+  };
 }
