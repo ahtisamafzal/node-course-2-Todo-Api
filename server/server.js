@@ -26,6 +26,7 @@ var app = express();
 
 app.use(bodyparser.json());
 
+////*************************** TODO SECTION ***************************
 
 // POST request
 app.post('/todo', (req, res) => {
@@ -172,6 +173,35 @@ app.patch('/todo/:id', (req, res) => {
   }
 });
 
+////*************************** USERS SECTION ***************************
+
+//POST User
+app.post('/user', (req, res) => {
+  try {
+    // console.log(`request coming in as JSON is : ${JSON.stringify(req.body,undefined,2)}`);
+    var _postedUser = _.pick(req.body, ['firstname', 'lastname',
+      'middlename', 'email', 'password', 'dob', 'address', 'tokens'
+    ]);
+
+    _postedUser.dob = Date.parse(_postedUser.dob);
+
+    var user = new models.Users(_postedUser);
+
+    user.save().then(() => {
+      return user.generateAuthToken();
+    }).then((token) => {
+      res.header('x-auth', token).send(user)
+    }).catch((err) => {
+      console.log(err);
+      res.status(400).send(err);
+    });
+    //res.send();
+  } catch (e) {
+    if (e) {
+      console.log(`Error in POST /user, ${e}`);
+    }
+  }
+});
 
 app.listen(port, () => {
   try {

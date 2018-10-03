@@ -16,15 +16,18 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "crypto-js": "^3.1.9-1",
     "expect": "^23.6.0",
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.11",
     "mocha": "^5.2.0",
     "mongodb": "^3.1.6",
     "mongoose": "^5.2.18",
     "mongoose-type-email": "^1.0.9",
     "supertest": "^3.3.0",
-    "typegoose": "^5.4.0"
+    "typegoose": "^5.4.0",
+    "validator": "^10.8.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.4",
