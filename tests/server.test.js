@@ -35,9 +35,6 @@ beforeEach(populateTodos);
 //   });
 // });
 
-
-
-
 describe('POST /todo', () => {
   it('Should create a new Todo', (done) => {
 
@@ -291,6 +288,51 @@ describe('POST /user', () => {
       .expect((res) => {
         expect(res.body.name).toEqual('MongoError');
         expect(res.body.code).toEqual(11000);
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+        done();
+      });
+  });
+
+});
+
+describe('POST /user/login', () => {
+
+  it('should login user and return auth token', (done) => {
+    //console.log(users[0].email);
+    request(app)
+      .post('/user/login')
+      .send({
+        email: users[0].email,
+        password: users[0].password
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.header['x-auth']).toBeTruthy();
+        expect(res.body._id).toBeTruthy();
+        expect(res.body.email).toEqual(users[0].email);
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+        done();
+      });
+  });
+
+  it('should reject invalid login', (done) => {
+    request(app)
+      .post('/user/login')
+      .send({
+        email: users[0].email,
+        password: users[0].password + 1
+      })
+      .expect(400)
+      .expect((res) => {
+        expect(res.header['auth']).toBeFalsy();
       })
       .end((err) => {
         if (err) {

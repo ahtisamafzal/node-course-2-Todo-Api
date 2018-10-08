@@ -228,11 +228,9 @@ app.post('/user/login', (req, res) => {
   }
 });
 
-
 app.get('/user/me', authenticate, (req, res) => {
   res.send(req.user);
 });
-
 
 app.listen(port, () => {
   try {
