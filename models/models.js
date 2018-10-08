@@ -3,9 +3,10 @@
 require('mongoose-type-email');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 
-var loadTodoSchema = function (mongoose){
+var loadTodoSchema = function(mongoose) {
   // declare todo document schema here
   var todoSchema = new mongoose.Schema({
     text: {
@@ -26,7 +27,7 @@ var loadTodoSchema = function (mongoose){
   return todoSchema;
 }
 
-var loadUsersSchema = function (mongoose){
+var loadUsersSchema = function(mongoose) {
 
   // declare users document schema here
   var userSchema = new mongoose.Schema({
@@ -100,10 +101,11 @@ var loadUsersSchema = function (mongoose){
     var user = this;
     var access = 'auth';
     var token = jwt.sign({
-      id: user._id.toHexString(),
-      access
-    }, '123abc').toString();
+      _id: user._id.toHexString(),
+      access: 'auth'
+    }, 'abc123').toString();
 
+    //console.log('Gen-Token:', token);
     user.tokens = user.tokens.concat([{
       access,
       token
@@ -120,18 +122,70 @@ var loadUsersSchema = function (mongoose){
     var decoded;
 
     try {
-      decoded = jwt.verify(token, '123abc');
+      // console.log('token:', token);
+      decoded = jwt.verify(token, 'abc123');
     } catch (e) {
-      console.log('Error DECODING TOKEN:-', e);
+      //console.log('Error DECODING TOKEN:-', e);
       return Promise.reject();
     }
-
-    return User.findById({
-      '_id': decoded.id,
+    var findedUser = User.findById({
+      '_id': decoded._id,
       'tokens.token': token,
       'tokens.access': 'auth'
     });
+    // console.log('findedUser: ', findedUser);
+    return findedUser;
   };
+
+  userSchema.statics.findByCredentials = function(email, password) {
+    var User = this;
+
+    try {
+      return User.findOne({
+        email
+      }).then((user) => {
+
+        if (!user) {
+          console.log('No User found!');
+          return Promise.reject();
+        }
+        
+        return new Promise((resolve, reject) => {
+          bcrypt.compare(password, user.password, (err, res) => {
+            if (res) {
+              resolve(user);
+            } else {
+              if (err) {
+                console.log('compare password error: ', err);
+              }
+              console.log('got rejected');
+              reject();
+            }
+          });
+        });
+
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+
+  userSchema.pre('save', function(next) {
+    var user = this;
+    if (user.isModified('password')) {
+      bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(user.password, salt, function(err, hash) {
+          // Store hash in your password DB.
+          user.password = hash;
+          next();
+        });
+      });
+
+    } else {
+      next();
+    }
+  });
 
   return userSchema;
 }

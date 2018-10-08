@@ -14,7 +14,7 @@ const bodyparser = require('body-parser');
 const {
   ObjectID
 } = require('mongodb');
-
+const jwt = require('jsonwebtoken');
 var {
   mongoose
 } = require('../db/mongoose');
@@ -205,11 +205,32 @@ app.post('/user', (req, res) => {
   }
 });
 
+// POST Login User
+app.post('/user/login', (req, res) => {
+  try {
+    var body = _.pick(req.body, ['email', 'password']);
 
+    models.Users.findByCredentials(body.email, body.password).then((_user) => {
+      // res.send(user);
+
+      return _user.generateAuthToken().then((token) => {
+        res.header('x-auth', token).send(_user);
+      });
+    }).catch((err) => {
+      console.log(err);
+      res.status(400).send();
+    });
+
+  } catch (e) {
+    if (e) {
+      console.log(`Error in POST /user/login, ${e}`);
+    }
+  }
+});
 
 
 app.get('/user/me', authenticate, (req, res) => {
-    res.send(req.user);
+  res.send(req.user);
 });
 
 

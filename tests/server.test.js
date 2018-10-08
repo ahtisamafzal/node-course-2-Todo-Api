@@ -1,6 +1,7 @@
 const expect = require('expect');
 const request = require('supertest');
 const _ = require('lodash');
+const jwt = require('jsonwebtoken');
 
 const {
   app,
@@ -12,25 +13,30 @@ const {
   ObjectID
 } = require('mongodb');
 
-const todos = [{
-  _id: new ObjectID(),
-  text: 'First Test',
-  completed: false
-}, {
-  _id: new ObjectID(),
-  text: 'Second Test',
-  completed: true
-}, { 
-  _id: new ObjectID(),
-  text: 'Third Test',
-  completed: false
-}]
+const {
+  todos,
+  users,
+  populateTodos,
+  populateUsers,
+  newUser,
+  invalidUser
+} = require('./seed/seed')(models);
 
-beforeEach((done) => {
-  models.Todo.deleteMany({}).then(() => {
-    return models.Todo.insertMany(todos);
-  }).then(() => done());
-});
+beforeEach(populateUsers);
+beforeEach(populateTodos);
+
+// beforeEach((done) => {
+//   models.Todo.deleteMany({}).then(() => {
+//     return models.Todo.insertMany(todos);
+//   }).then(() => {
+//     models.Users.deleteMany({}).then(() => {
+//       return models.Users.insertMany(users);
+//     }).then(() => done());
+//   });
+// });
+
+
+
 
 describe('POST /todo', () => {
   it('Should create a new Todo', (done) => {
@@ -203,26 +209,95 @@ describe('PATCH /todo/:id', () => {
       })
       .end(done);
   });
+});
 
-  // it('Should clear completedAt when todo is not completed', (done) => {
-  //   var hexId = new ObjectID();
-  //   console.log(hexId);
-  //   request(app)
-  //     .patch(`/todo/${hexId}`)
-  //     .expect(404)
-  //     .expect((res) => {
-  //       expect(res.text.length).toBe(0)
-  //     })
-  //     .end(done);
-  // });
-  //
-  // it('Should return 404 for none object ids', (done) => {
-  //   request(app)
-  //     .patch(`/todo/${123}`)
-  //     .expect(404)
-  //     .expect((res) => {
-  //       expect(res.text).toBe('ID is invalid')
-  //     })
-  //     .end(done);
-  // });
+//5bb6552ff74e98fa7acb00e8
+
+describe('GET /user/me', () => {
+  // console.log(JSON.stringify(users, undefined, 2));
+  it('Should return user if authenticated', (done) => {
+    request(app)
+      .get('/user/me')
+      .set('x-auth', users[0].tokens[0].token)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body._id).toBe(users[0]._id.toHexString());
+        expect(res.body.email).toBe(users[0].email);
+      })
+      .end(done);
+  });
+
+  it('Should return 401 if not authenticated', (done) => {
+    request(app)
+      .get('/user/me')
+      //.set('x-auth', users[0].tokens[0].token + 111)
+      .expect(401)
+      .expect((res) => {
+        expect(res.body).toEqual({});
+      })
+      .end(done);
+  });
+
+});
+
+
+describe('POST /user', () => {
+  it('Should create a user', (done) => {
+    request(app)
+      .post('/user')
+      .send(newUser)
+      .expect(200)
+      .expect((res) => {
+        expect(res.header['x-auth']).toBeTruthy();
+        expect(res.body._id).toBeTruthy();
+        expect(res.body.email).toEqual(newUser.email);
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+        var email = newUser.email;
+        models.Users.findOne({
+          email
+        }).then((user) => {
+          expect(user).toBeTruthy();
+          // expect(user.password.length).toBe(>6);
+          done();
+        });
+      });
+  });
+
+  it('Should return validation error if request is invalid ', (done) => {
+    request(app)
+      .post('/user')
+      .send(invalidUser)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body._message).toEqual("Users validation failed");
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+        done();
+      });
+  });
+
+  it('Should not create user if email is in use', (done) => {
+    request(app)
+      .post('/user')
+      .send(users[0])
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.name).toEqual('MongoError');
+        expect(res.body.code).toEqual(11000);
+      })
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+        done();
+      });
+  });
+
 });
