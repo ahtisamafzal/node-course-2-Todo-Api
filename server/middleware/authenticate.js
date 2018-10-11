@@ -8,7 +8,7 @@ var usersAuthentication = function(models) {
     } else {
       models.Users.findByToken(token).then((user) => {
         if (!user) {
-          // console.log('User not found');
+          console.log('User not found');
           return Promise.reject();
         }
         // console.log('user:', user);
@@ -17,7 +17,7 @@ var usersAuthentication = function(models) {
         req.token = token;
         next();
       }).catch((err) => {
-        // console.log(err);
+        console.log(err);
         res.status(401).send();
       });
     };

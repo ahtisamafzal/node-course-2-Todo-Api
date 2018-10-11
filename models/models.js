@@ -149,7 +149,7 @@ var loadUsersSchema = function(mongoose) {
           console.log('No User found!');
           return Promise.reject();
         }
-        
+
         return new Promise((resolve, reject) => {
           bcrypt.compare(password, user.password, (err, res) => {
             if (res) {
@@ -170,6 +170,17 @@ var loadUsersSchema = function(mongoose) {
     }
   };
 
+  userSchema.methods.removeToken = function(token) {
+    var user = this;
+
+    return user.updateOne({
+      $pull: {
+        tokens: {
+          token
+        }
+      }
+    });
+  }
 
   userSchema.pre('save', function(next) {
     var user = this;
